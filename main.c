@@ -56,7 +56,6 @@ void do_array(int *start, int *end)
     int seen[array_size];
     int current_seen_sum = 0;
 
-    print_array(seen, seen + array_size);
     for(int *cursor = start, *q = seen; cursor < end; cursor++, q++){
         print_array(seen, seen + array_size);
         int *other = find_match(*cursor, cursor+1, end, q+1);
