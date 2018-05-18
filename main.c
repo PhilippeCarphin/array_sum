@@ -1,16 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-int sum(int *start, int *end);
-void print_array(int *start, int *end);
-
-size_t size(int *start, int *end){
-    return end - start;
-}
+#define SEEN 1
 
 /*******************************************************************************
  * Prints all the intermediate arrays and their sums
 *******************************************************************************/
+int sum(int *start, int *end);
+void print_array(int *start, int *end);
 void examine_array(int *start, int *end)
 {
     for(int *p = start; p < end; p++){
@@ -28,7 +24,7 @@ void print_array(int *start, int *end)
         printf("%d,", *p);
         sum += *p;
     }
-    printf(" : sum = %d, size = %lu\n", sum, size(start,end));
+    printf(" : sum = %d, size = %lu\n", sum, end-start);
 }
 
 
@@ -47,16 +43,21 @@ int sum(int *start, int *end)
     return s;
 }
 
+/*******************************************************************************
+ * Do the algorithm.
+*******************************************************************************/
 int *find_match(int to_match, int *start, int *end, int *seen_start);
-
 void do_array(int *start, int *end)
 {
     int current_sum = 0;
     int array_size = end - start;
-    int seen[array_size];
+    int seen[array_size]; memset(seen, 0, sizeof(seen));
     int current_seen_sum = 0;
 
     for(int *cursor = start, *q = seen; cursor < end; cursor++, q++){
+        if(*q == SEEN){
+            continue;
+        }
         print_array(seen, seen + array_size);
         int *other = find_match(*cursor, cursor+1, end, q+1);
         if (current_sum - *cursor < 0){
@@ -80,13 +81,13 @@ void do_array(int *start, int *end)
         }
 
         *q = 1;
-        *(seen + (other - start) +1) = 1;
+        *(seen + (other - start)) = 1;
 
         current_sum += *cursor;
         current_seen_sum += *cursor + *other;
     }
 }
-#define SEEN 1
+
 int *find_match(int to_match, int *start, int *end, int *seen_start)
 {
     int *best_match = start;
