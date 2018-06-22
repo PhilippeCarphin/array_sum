@@ -54,15 +54,34 @@ void do_array(int *start, int *end)
     int seen[array_size]; memset(seen, 0, sizeof(seen));
     int current_seen_sum = 0;
 
+    /*
+     * Loop from left to right over positions that have not been marked as
+     * "seen"
+     */
     for(int *cursor = start, *q = seen; cursor < end; cursor++, q++){
         if(*q == SEEN){
             continue;
         }
         print_array(seen, seen + array_size);
+
+        /*
+         * Find the closest non-seen number and negate one of the two numbers
+         * based on what was prevously done
+         */
         int *other = find_match(*cursor, cursor+1, end, q+1);
+
+        /*
+         * Since the intermediate sums must be positive, we can't invert the
+         * cursor if it would make the current sum negative
+         */
         if (current_sum - *cursor < 0){
             *other *= -1;
         } else {
+            /*
+             * Otherwise, we will invert the largest or the smallest based on
+             * the sign of the current sum of seen numbers to bring the sum of
+             * seen numbers closer (hopefully) to 0
+             */
             int *largest = NULL;
             int *smallest = NULL;
             if( *other > *cursor ){
@@ -80,9 +99,15 @@ void do_array(int *start, int *end)
             }
         }
 
+        /*
+         * Mark other and cursor as seen
+         */
         *q = 1;
         *(seen + (other - start)) = 1;
 
+        /*
+         * Accumulate values in the sums
+         */
         current_sum += *cursor;
         current_seen_sum += *cursor + *other;
     }
@@ -108,7 +133,7 @@ int *find_match(int to_match, int *start, int *end, int *seen_start)
 
 int main(void){
 
-    int input[] = {9, 4, 2, 8};
+    int input[] = {1,2,3,4};
 
     examine_array(input+0, input+4);
 
